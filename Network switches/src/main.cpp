@@ -43,6 +43,8 @@ void button1_callback(const String & state) {
     myServo.write(90);
     // 打印“灯已开”到UI界面
     stated.print("灯已开");
+    // 取消睡眠定时器
+    WiFi.setSleepMode(WIFI_MODEM_SLEEP); // 设置为Modem-Sleep模式
 }
   // 按钮按下执行操作
 /**
@@ -59,6 +61,8 @@ void button2_callback(const String & state){
     myServo.write(90);
     //打印“灯已关”到UI界面
     stated.print("灯已关");
+    // 取消睡眠定时器
+    WiFi.setSleepMode(WIFI_MODEM_SLEEP); // 设置为Modem-Sleep模式
 }
 
 void button3_callback(const String & state) {
@@ -124,5 +128,14 @@ void loop() {
         stated_2.print("自检完成");
         // 设置标志位，避免重复执行自检
         k = 1;
+
+      // 检查按钮是否在10秒内被按下
+      static uint32_t lastButtonPressTime = 0;
+      if (millis() - lastButtonPressTime > 20000) { // 10秒
+          // 按钮在10秒内未被按下，进入睡眠模式
+        WiFi.disconnect();
+        WiFi.setSleepMode(WIFI_MODEM_SLEEP); // 设置为Modem-Sleep模式
+      }
+
     }
 }
